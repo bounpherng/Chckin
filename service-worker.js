@@ -1,20 +1,45 @@
-// Service Worker ສຳລັບ PWA ລະບົບເຊັກອິນ
-const CACHE_NAME = 'checkin-pwa-v1';
+const CACHE_NAME = 'checkin-pwa-v2';
+// ໄຟລ໌ທີ່ຈຳເປັນຕ້ອງ Cache ເພື່ອໃຫ້ PWA ເຮັດວຽກໄດ້ ແລະ ຕິດຕັ້ງໄດ້
+const ASSETS_TO_CACHE = [
+  './',
+  './index.html',
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.jpg'
+];
 
-// ຕິດຕັ້ງ Service Worker
+// 1. ຕິດຕັ້ງ ແລະ Cache ໄຟລ໌
 self.addEventListener('install', (event) => {
-  console.log('✅ Service Worker: ຕິດຕັ້ງສຳເລັດ');
   self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('✅ Caching assets');
+      return cache.addAll(ASSETS_TO_CACHE);
+    })
+  );
 });
 
-// ເປີດໃຊ້ງານ Service Worker
+// 2. ເປີດໃຊ້ງານ ແລະ ລຶບ Cache ເກົ່າ
 self.addEventListener('activate', (event) => {
-  console.log('✅ Service Worker: ເປີດໃຊ້ງານແລ້ວ');
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cache) => {
+          if (cache !== CACHE_NAME) {
+            return caches.delete(cache);
+          }
+        })
+      );
+    })
+  );
+  return self.clients.claim();
 });
 
-// ຈັດການຄຳຮ້ອງຂໍ (Fetch)
+// 3. ໃຫ້ບໍລິການໄຟລ໌ຈາກ Cache ຖ້າມີ, ຖ້າບໍ່ມີໃຫ້ດຶງຈາກເນັດ
 self.addEventListener('fetch', (event) => {
-  // ປ່ອຍໃຫ້ທຸກຄຳຮ້ອງຂໍຜ່ານໄປເວບຈິງ
-  event.respondWith(fetch(event.request));
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    })
+  );
 });
