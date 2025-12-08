@@ -1,7 +1,7 @@
-// ອັບເດດ version ເປັນ v5 ເພື່ອໃຫ້ເຄື່ອງລູກຂ່າຍໂຫລດໄອຄອນໃໝ່
-const CACHE_NAME = 'checkin-pwa-v5-fixed';
+// ອັບເດດ version ເປັນ v6-github ເພື່ອບັງຄັບໃຫ້ GitHub Pages ອັບເດດ
+const CACHE_NAME = 'checkin-pwa-v6-github';
 
-// ແກ້ໄຂຊື່ໄຟລ໌ໃຫ້ຖືກຕ້ອງ (ຕົວພິມນ້ອຍທັງໝົດ)
+// ໃຊ້ ./ ນຳໜ້າສະເໝີສຳລັບ GitHub Pages
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -11,10 +11,10 @@ const ASSETS_TO_CACHE = [
 ];
 
 self.addEventListener('install', (event) => {
-  self.skipWaiting(); // ບັງຄັບໃຫ້ SW ໃໝ່ທຳງານທັນທີ
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('✅ Caching assets v5...');
+      console.log('✅ Caching assets for GitHub...');
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
@@ -39,7 +39,6 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
-      // ຖ້າມີໃນ Cache ໃຫ້ໃຊ້ Cache, ຖ້າບໍ່ມີໃຫ້ໂຫລດຈາກ Network
       return response || fetch(event.request);
     })
   );
