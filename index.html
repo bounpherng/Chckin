@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ລະບົບເຊັກອິນ - ຕິດຕັ້ງ</title>
   
-  <!-- Manifest: ໃຊ້ ./ ເພື່ອບອກວ່າຢູ່ໂຟນເດີດຽວກັນ -->
+  <!-- Manifest -->
   <link rel="manifest" href="./manifest.json">
   
-  <!-- ໄອຄອນ: ຕ້ອງກົງກັບຊື່ໄຟລ໌ແທ້ (GitHub Case Sensitive) -->
+  <!-- ໄອຄອນ: ກວດສອບຊື່ໄຟລ໌ໃຫ້ຖືກຕ້ອງ -->
   <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
   <link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png">
   
@@ -96,7 +96,6 @@
   </div>
 
   <script>
-    // 1. ກວດສອບ PWA (Standalone)
     function isRunningStandalone() {
       return (window.matchMedia('(display-mode: standalone)').matches) ||
              (window.navigator.standalone) || 
@@ -108,10 +107,8 @@
       window.location.href = 'https://lssomain.laotel.com/Authentication';
     }
 
-    // 2. Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        // ໃຊ້ ./ ເພື່ອບອກວ່າຢູ່ Folder ດຽວກັນ (ສຳຄັນຫຼາຍສຳລັບ GitHub Pages)
         navigator.serviceWorker.register('./service-worker.js')
           .then(reg => {
              console.log('SW Registered');
@@ -121,7 +118,6 @@
       });
     }
 
-    // 3. Logic Install Button
     let deferredPrompt;
     const installBtn = document.getElementById('installBtn');
     
@@ -139,7 +135,6 @@
       deferredPrompt = null;
     });
 
-    // 4. iOS Check
     const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent) && !window.MSStream;
     if (isIos && !isRunningStandalone()) {
       document.getElementById('iosPrompt').style.display = 'block';
