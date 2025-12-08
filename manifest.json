@@ -1,5 +1,5 @@
 {
-  "name": "ລະບົບເຊັກອິນ - ປະກັນສັງຄົມ",
+  "name": "ລະບົບເຊັກອິນ-ປະກັນສັງຄົມ",
   "short_name": "ເຊັກອິນ",
   "description": "ລະບົບຕິດຕາມການເຊັກອິນເຂົ້າອອກຫ້ອງການ",
   "start_url": "./index.html",
@@ -9,16 +9,16 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "./icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "icon-512.jpg",
+      "src": "./icon-512.jpg",
       "sizes": "512x512",
       "type": "image/jpeg",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
