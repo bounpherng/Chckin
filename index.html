@@ -4,19 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ລະບົບເຊັກອິນ - ຕິດຕັ້ງ</title>
-  
-  <!-- Manifest -->
+
   <link rel="manifest" href="./manifest.json">
-  
-  <!-- ໄອຄອນ Browser ແລະ iOS -->
+
   <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
   <link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png">
-  
-  <!-- ຕັ້ງຄ່າ PWA -->
+
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#2e9a57">
-  
+
   <style>
     body {
       margin: 0;
@@ -25,132 +22,88 @@
       background: #f0f2f5;
       color: #333;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      text-align: center;
     }
     .container {
       background: white;
       padding: 2rem;
       border-radius: 15px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      max-width: 90%;
-      width: 350px;
-    }
-    h1 { margin-top: 0; color: #2e9a57; font-size: 1.5rem; }
-    p { color: #666; margin-bottom: 20px; }
-    
-    .btn {
-      background: #2e9a57;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 25px;
-      font-size: 16px;
-      cursor: pointer;
-      font-weight: bold;
-      width: 100%;
-      display: none; /* ເຊື່ອງໄວ້ກ່ອນ ຈົນກວ່າຈະພ້ອມ */
-      box-shadow: 0 2px 4px rgba(46, 154, 87, 0.3);
-      transition: transform 0.2s;
-    }
-    .btn:active { transform: scale(0.95); }
-    
-    .ios-instruction {
-      display: none;
-      background: #f8f9fa;
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 15px;
-      font-size: 0.95rem;
-      border: 1px solid #dee2e6;
-      line-height: 1.5;
+      width: 320px;
+      text-align: center;
     }
     .icon-preview {
       width: 80px;
       height: 80px;
       border-radius: 15px;
       margin-bottom: 15px;
-      object-fit: cover;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .btn {
+      background: #2e9a57;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 25px;
+      font-weight: bold;
+      width: 100%;
+      display: none;
+    }
+    .ios-instruction {
+      display: none;
+      margin-top: 15px;
+      font-size: 14px;
+      background: #f6f6f6;
+      padding: 10px;
+      border-radius: 10px;
     }
   </style>
 </head>
+
 <body>
-
   <div class="container" id="mainContent">
-    <img src="./icon-192.png" alt="Logo" class="icon-preview" onerror="this.src=''; this.style.backgroundColor='#eee'">
-    <h1>ລະບົບເຊັກອິນ</h1>
-    <p id="statusText">ກະລຸນາຕິດຕັ້ງແອັບເພື່ອເຂົ້າສູ່ລະບົບ</p>
-    
-    <button id="installBtn" class="btn">📲 ຕິດຕັ້ງແອັບລົງມືຖື</button>
-    
-    <div id="iosPrompt" class="ios-instruction">
-      <div>ຕິດຕັ້ງເທິງ iPhone/iPad:</div>
-      <div style="margin-top:5px;">1. ກົດປຸ່ມ <strong>Share</strong> <span style="font-size:1.2em">⎋</span> ດ້ານລຸ່ມ</div>
-      <div style="margin-top:5px;">2. ເລືອກ <strong>"Add to Home Screen"</strong> ⊞</div>
-    </div>
+    <img src="./icon-192.png" class="icon-preview">
+    <h2>ລະບົບເຊັກອິນ</h2>
+    <p id="statusText">ກະລຸນາຕິດຕັ້ງແອັບ</p>
 
-    <p id="redirectMsg" style="display:none; color: #2e9a57; font-weight:bold;">✅ ກຳລັງເຂົ້າສູ່ລະບົບ...</p>
+    <button id="installBtn" class="btn">📲 ຕິດຕັ້ງແອັບ</button>
+
+    <div id="iosPrompt" class="ios-instruction">
+      iPhone: Share → Add to Home Screen
+    </div>
   </div>
 
-  <script>
-    // 1. ກວດສອບວ່າເປີດຜ່ານ PWA (Standalone) ຫຼືບໍ່
-    function isRunningStandalone() {
-      return (window.matchMedia('(display-mode: standalone)').matches) ||
-             (window.navigator.standalone) || 
-             document.referrer.includes('android-app://');
-    }
+<script>
+function isRunningStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+}
+if (isRunningStandalone()) {
+  location.href = 'https://lssomain.laotel.com/Authentication';
+}
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./service-worker.js');
+}
 
-    // 2. ຖ້າເປັນ PWA ແລ້ວ ໃຫ້ Redirect ທັນທີ
-    if (isRunningStandalone()) {
-      document.getElementById('mainContent').style.display = 'none'; 
-      window.location.replace('https://lssomain.laotel.com/Authentication');
-    }
+let deferredPrompt;
+const btn = document.getElementById('installBtn');
 
-    // 3. Service Worker
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js')
-          .then(reg => {
-             console.log('SW Registered');
-             // ບັງຄັບ update ຖ້າມີ version ໃໝ່
-             reg.update();
-          })
-          .catch(err => console.error('SW Fail', err));
-      });
-    }
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  btn.style.display = 'block';
+});
 
-    // 4. Logic Install Button
-    let deferredPrompt;
-    const installBtn = document.getElementById('installBtn');
-    
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installBtn.style.display = 'block';
-    });
+btn.onclick = async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+};
 
-    installBtn.addEventListener('click', async () => {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log('User response:', outcome);
-      deferredPrompt = null;
-    });
+const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent);
+if (isIos && !isRunningStandalone()) {
+  document.getElementById('iosPrompt').style.display = 'block';
+}
+</script>
 
-    // 5. iOS Check
-    const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent) && !window.MSStream;
-    if (isIos && !isRunningStandalone()) {
-      document.getElementById('iosPrompt').style.display = 'block';
-    }
-
-    window.addEventListener('appinstalled', () => {
-      installBtn.style.display = 'none';
-      document.getElementById('statusText').innerText = 'ຕິດຕັ້ງສຳເລັດ! ກະລຸນາເປີດແອັບຈາກໜ້າຈໍຫຼັກ.';
-    });
-  </script>
 </body>
 </html>
