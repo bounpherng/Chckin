@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ລະບົບເຊັກອິນ</title>
+  
+  <!-- ລີງໄປ manifest.json -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- ໄອຄອນ -->
+  <link rel="icon" href="icon-512.png">
+  <link rel="apple-touch-icon" href="icon-512.png">
+  
+  <!-- ຕັ້ງຄ່າສຳລັບ iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="theme-color" content="#2e9a57">
+  
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: #2e9a57;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
+    .loader {
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="loader">ກຳລັງເປີດລະບົບເຊັກອິນ...</div>
+
+  <script>
+    // ລີງໄປເວບທັນທີທັນໃດ
+    window.location.replace('https://lssomain.laotel.com/Authentication');
+    
+    // ລົງທະບຽນ Service Worker ສຳລັບ PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('✅ Service Worker ລົງທະບຽນສຳເລັດ'))
+        .catch((err) => console.log('❌ Service Worker ລົ້ມເຫຼວ:', err));
+    }
+  </script>
+</body>
+</html>
