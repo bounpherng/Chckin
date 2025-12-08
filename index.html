@@ -2,17 +2,15 @@
 <html lang="lo">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>ລະບົບເຊັກອິນ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ລະບົບເຊັກອິນ - ຕິດຕັ້ງ</title>
   
-  <!-- ລີງໄປ manifest.json -->
   <link rel="manifest" href="manifest.json">
   
-  <!-- ໄອຄອນ -->
-  <link rel="icon" href="icon-512.png">
-  <link rel="apple-touch-icon" href="icon-512.png">
+  <!-- ໝາຍເຫດ: ຄວນໃຊ້ໄຟລ໌ .png ສຳລັບໄອຄອນ -->
+  <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
   
-  <!-- ຕັ້ງຄ່າສຳລັບ iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="theme-color" content="#2e9a57">
@@ -21,33 +19,132 @@
     body {
       margin: 0;
       padding: 0;
-      font-family: Arial, sans-serif;
-      background: #2e9a57;
-      color: white;
+      font-family: 'Phetsarath OT', Arial, sans-serif;
+      background: #f0f2f5;
+      color: #333;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
       text-align: center;
     }
-    .loader {
-      font-size: 20px;
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      max-width: 90%;
+      width: 350px;
+    }
+    h1 { margin-top: 0; color: #2e9a57; font-size: 1.5rem; }
+    p { color: #666; margin-bottom: 20px; }
+    
+    .btn {
+      background: #2e9a57;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 25px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 100%;
+      display: none; /* ເຊື່ອງໄວ້ກ່ອນ ຈົນກວ່າຈະພ້ອມຕິດຕັ້ງ */
+      box-shadow: 0 2px 4px rgba(46, 154, 87, 0.3);
+    }
+    .btn:active { transform: scale(0.98); }
+    
+    .ios-instruction {
+      display: none;
+      background: #f8f9fa;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 15px;
+      font-size: 0.9rem;
+      border: 1px solid #dee2e6;
+    }
+    .icon-preview {
+      width: 80px;
+      height: 80px;
+      border-radius: 15px;
+      margin-bottom: 15px;
+      object-fit: cover;
     }
   </style>
 </head>
 <body>
-  <div class="loader">ກຳລັງເປີດລະບົບເຊັກອິນ...</div>
+
+  <div class="container" id="mainContent">
+    <img src="icon-192.png" alt="Logo" class="icon-preview" onerror="this.style.display='none'">
+    <h1>ລະບົບເຊັກອິນ</h1>
+    <p id="statusText">ກະລຸນາຕິດຕັ້ງແອັບເພື່ອເຂົ້າສູ່ລະບົບ</p>
+    
+    <!-- ປຸ່ມຕິດຕັ້ງ ສຳລັບ Android/Chrome -->
+    <button id="installBtn" class="btn">📲 ຕິດຕັ້ງແອັບລົງມືຖື</button>
+    
+    <!-- ຄຳແນະນຳສຳລັບ iOS -->
+    <div id="iosPrompt" class="ios-instruction">
+      ກົດປຸ່ມ <strong>Share</strong> ດ້ານລຸ່ມ <br> ແລ້ວເລືອກ <strong>"Add to Home Screen"</strong>
+    </div>
+
+    <p id="redirectMsg" style="display:none; color: #2e9a57;">✅ ກຳລັງເຂົ້າສູ່ລະບົບ...</p>
+  </div>
 
   <script>
-    // ລີງໄປເວບທັນທີທັນໃດ
-    window.location.replace('https://lssomain.laotel.com/Authentication');
-    
-    // ລົງທະບຽນ Service Worker ສຳລັບ PWA
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log('✅ Service Worker ລົງທະບຽນສຳເລັດ'))
-        .catch((err) => console.log('❌ Service Worker ລົ້ມເຫຼວ:', err));
+    // 1. ກວດສອບວ່າເປີດຜ່ານ PWA (Standalone) ຫຼືບໍ່
+    function isRunningStandalone() {
+      return (window.matchMedia('(display-mode: standalone)').matches) ||
+             (window.navigator.standalone) || 
+             document.referrer.includes('android-app://');
     }
+
+    // 2. ຖ້າເປັນ PWA ແລ້ວ ໃຫ້ Redirect ທັນທີ
+    if (isRunningStandalone()) {
+      document.getElementById('mainContent').style.display = 'none'; // ເຊື່ອງໜ້າ UI
+      // ສາມາດໃສ່ Loading ງາມໆຢູ່ນີ້
+      window.location.replace('https://lssomain.laotel.com/Authentication');
+    }
+
+    // 3. ຈັດການເລື່ອງ Service Worker (ສຳຄັນສຳລັບ PWA)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(reg => console.log('SW Registered'))
+          .catch(err => console.log('SW Fail', err));
+      });
+    }
+
+    // 4. Logic ສຳລັບປຸ່ມ Install (Android/PC)
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      // ສະແດງປຸ່ມຕິດຕັ້ງ ເມື່ອ Browser ພ້ອມ
+      installBtn.style.display = 'block';
+    });
+
+    installBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log('User response:', outcome);
+      deferredPrompt = null;
+    });
+
+    // 5. ກວດສອບວ່າເປັນ iOS ຫຼືບໍ່ (ເພື່ອສະແດງຄຳແນະນຳ ເພາະ iOS ບໍ່ມີປຸ່ມ Auto Install)
+    const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIos && !isRunningStandalone()) {
+      document.getElementById('iosPrompt').style.display = 'block';
+    }
+
+    // 6. ເມື່ອຕິດຕັ້ງສຳເລັດ
+    window.addEventListener('appinstalled', () => {
+      installBtn.style.display = 'none';
+      document.getElementById('statusText').innerText = 'ຕິດຕັ້ງສຳເລັດ! ກະລຸນາເປີດແອັບຈາກໜ້າຈໍຫຼັກ.';
+    });
   </script>
 </body>
 </html>
