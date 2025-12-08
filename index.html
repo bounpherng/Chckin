@@ -9,7 +9,6 @@
   <link rel="manifest" href="./manifest.json">
   
   <!-- ໄອຄອນ Browser ແລະ iOS -->
-  <!-- ໃຊ້ icon-192.png ເພາະເປັນ PNG ຈະສະແດງຜົນໄດ້ດີກວ່າໃນ Browser -->
   <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
   <link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png">
   
@@ -82,15 +81,12 @@
 <body>
 
   <div class="container" id="mainContent">
-    <!-- ກວດສອບຊື່ໄຟລ໌ຮູບພາບໃຫ້ຖືກຕ້ອງ -->
     <img src="./icon-192.png" alt="Logo" class="icon-preview" onerror="this.src=''; this.style.backgroundColor='#eee'">
     <h1>ລະບົບເຊັກອິນ</h1>
     <p id="statusText">ກະລຸນາຕິດຕັ້ງແອັບເພື່ອເຂົ້າສູ່ລະບົບ</p>
     
-    <!-- ປຸ່ມຕິດຕັ້ງ ສຳລັບ Android/Chrome -->
     <button id="installBtn" class="btn">📲 ຕິດຕັ້ງແອັບລົງມືຖື</button>
     
-    <!-- ຄຳແນະນຳສຳລັບ iOS -->
     <div id="iosPrompt" class="ios-instruction">
       <div>ຕິດຕັ້ງເທິງ iPhone/iPad:</div>
       <div style="margin-top:5px;">1. ກົດປຸ່ມ <strong>Share</strong> <span style="font-size:1.2em">⎋</span> ດ້ານລຸ່ມ</div>
@@ -111,20 +107,23 @@
     // 2. ຖ້າເປັນ PWA ແລ້ວ ໃຫ້ Redirect ທັນທີ
     if (isRunningStandalone()) {
       document.getElementById('mainContent').style.display = 'none'; 
-      // Redirect ໄປຍັງ URL ທີ່ກຳນົດ
       window.location.replace('https://lssomain.laotel.com/Authentication');
     }
 
-    // 3. ຈັດການເລື່ອງ Service Worker
+    // 3. Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./service-worker.js')
-          .then(reg => console.log('SW Registered'))
+          .then(reg => {
+             console.log('SW Registered');
+             // ບັງຄັບ update ຖ້າມີ version ໃໝ່
+             reg.update();
+          })
           .catch(err => console.error('SW Fail', err));
       });
     }
 
-    // 4. Logic ສຳລັບປຸ່ມ Install (Android/PC)
+    // 4. Logic Install Button
     let deferredPrompt;
     const installBtn = document.getElementById('installBtn');
     
@@ -142,13 +141,12 @@
       deferredPrompt = null;
     });
 
-    // 5. ກວດສອບ iOS
+    // 5. iOS Check
     const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent) && !window.MSStream;
     if (isIos && !isRunningStandalone()) {
       document.getElementById('iosPrompt').style.display = 'block';
     }
 
-    // 6. ເມື່ອຕິດຕັ້ງສຳເລັດ
     window.addEventListener('appinstalled', () => {
       installBtn.style.display = 'none';
       document.getElementById('statusText').innerText = 'ຕິດຕັ້ງສຳເລັດ! ກະລຸນາເປີດແອັບຈາກໜ້າຈໍຫຼັກ.';

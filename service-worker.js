@@ -1,13 +1,13 @@
-// ປ່ຽນຊື່ Cache ເພື່ອບັງຄັບໃຫ້ Browser ອັບເດດໄຟລ໌ໃໝ່
-const CACHE_NAME = 'checkin-pwa-v3-fix-icons';
+// ປ່ຽນຊື່ Cache ເປັນ v4 ເພື່ອບັງຄັບໃຫ້ Browser ອັບເດດໄຟລ໌ໃໝ່ແນ່ນອນ
+const CACHE_NAME = 'checkin-pwa-v4-fix-icons';
 
-// ລະບຸຊື່ໄຟລ໌ໃຫ້ຖືກຕ້ອງຕາມທີ່ມີ (Case Sensitive)
+// ລະບຸຊື່ໄຟລ໌ໃຫ້ຖືກຕ້ອງ (ເອົາ ./ ອອກຈາກຊື່ໄຟລ໌ບາງອັນເພື່ອຄວາມຊົວຣ໌)
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
   './icon-192.png',
-  './icon-512.jpg'
+  './icon-512.Png'
 ];
 
 self.addEventListener('install', (event) => {
