@@ -5,14 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ລະບົບເຊັກອິນ - ຕິດຕັ້ງ</title>
   
-  <link rel="manifest" href="manifest.json">
+  <!-- Manifest -->
+  <link rel="manifest" href="./manifest.json">
   
-  <!-- ໝາຍເຫດ: ຄວນໃຊ້ໄຟລ໌ .png ສຳລັບໄອຄອນ -->
-  <link rel="icon" href="icon-192.png">
-  <link rel="apple-touch-icon" href="icon-192.png">
+  <!-- ໄອຄອນ Browser ແລະ iOS -->
+  <!-- ໃຊ້ icon-192.png ເພາະເປັນ PNG ຈະສະແດງຜົນໄດ້ດີກວ່າໃນ Browser -->
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png">
   
+  <!-- ຕັ້ງຄ່າ PWA -->
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#2e9a57">
   
   <style>
@@ -50,19 +53,21 @@
       cursor: pointer;
       font-weight: bold;
       width: 100%;
-      display: none; /* ເຊື່ອງໄວ້ກ່ອນ ຈົນກວ່າຈະພ້ອມຕິດຕັ້ງ */
+      display: none; /* ເຊື່ອງໄວ້ກ່ອນ ຈົນກວ່າຈະພ້ອມ */
       box-shadow: 0 2px 4px rgba(46, 154, 87, 0.3);
+      transition: transform 0.2s;
     }
-    .btn:active { transform: scale(0.98); }
+    .btn:active { transform: scale(0.95); }
     
     .ios-instruction {
       display: none;
       background: #f8f9fa;
-      padding: 10px;
-      border-radius: 8px;
+      padding: 15px;
+      border-radius: 10px;
       margin-top: 15px;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       border: 1px solid #dee2e6;
+      line-height: 1.5;
     }
     .icon-preview {
       width: 80px;
@@ -70,13 +75,15 @@
       border-radius: 15px;
       margin-bottom: 15px;
       object-fit: cover;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
   </style>
 </head>
 <body>
 
   <div class="container" id="mainContent">
-    <img src="icon-192.png" alt="Logo" class="icon-preview" onerror="this.style.display='none'">
+    <!-- ກວດສອບຊື່ໄຟລ໌ຮູບພາບໃຫ້ຖືກຕ້ອງ -->
+    <img src="./icon-192.png" alt="Logo" class="icon-preview" onerror="this.src=''; this.style.backgroundColor='#eee'">
     <h1>ລະບົບເຊັກອິນ</h1>
     <p id="statusText">ກະລຸນາຕິດຕັ້ງແອັບເພື່ອເຂົ້າສູ່ລະບົບ</p>
     
@@ -85,10 +92,12 @@
     
     <!-- ຄຳແນະນຳສຳລັບ iOS -->
     <div id="iosPrompt" class="ios-instruction">
-      ກົດປຸ່ມ <strong>Share</strong> ດ້ານລຸ່ມ <br> ແລ້ວເລືອກ <strong>"Add to Home Screen"</strong>
+      <div>ຕິດຕັ້ງເທິງ iPhone/iPad:</div>
+      <div style="margin-top:5px;">1. ກົດປຸ່ມ <strong>Share</strong> <span style="font-size:1.2em">⎋</span> ດ້ານລຸ່ມ</div>
+      <div style="margin-top:5px;">2. ເລືອກ <strong>"Add to Home Screen"</strong> ⊞</div>
     </div>
 
-    <p id="redirectMsg" style="display:none; color: #2e9a57;">✅ ກຳລັງເຂົ້າສູ່ລະບົບ...</p>
+    <p id="redirectMsg" style="display:none; color: #2e9a57; font-weight:bold;">✅ ກຳລັງເຂົ້າສູ່ລະບົບ...</p>
   </div>
 
   <script>
@@ -101,17 +110,17 @@
 
     // 2. ຖ້າເປັນ PWA ແລ້ວ ໃຫ້ Redirect ທັນທີ
     if (isRunningStandalone()) {
-      document.getElementById('mainContent').style.display = 'none'; // ເຊື່ອງໜ້າ UI
-      // ສາມາດໃສ່ Loading ງາມໆຢູ່ນີ້
+      document.getElementById('mainContent').style.display = 'none'; 
+      // Redirect ໄປຍັງ URL ທີ່ກຳນົດ
       window.location.replace('https://lssomain.laotel.com/Authentication');
     }
 
-    // 3. ຈັດການເລື່ອງ Service Worker (ສຳຄັນສຳລັບ PWA)
+    // 3. ຈັດການເລື່ອງ Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js')
+        navigator.serviceWorker.register('./service-worker.js')
           .then(reg => console.log('SW Registered'))
-          .catch(err => console.log('SW Fail', err));
+          .catch(err => console.error('SW Fail', err));
       });
     }
 
@@ -122,7 +131,6 @@
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      // ສະແດງປຸ່ມຕິດຕັ້ງ ເມື່ອ Browser ພ້ອມ
       installBtn.style.display = 'block';
     });
 
@@ -134,7 +142,7 @@
       deferredPrompt = null;
     });
 
-    // 5. ກວດສອບວ່າເປັນ iOS ຫຼືບໍ່ (ເພື່ອສະແດງຄຳແນະນຳ ເພາະ iOS ບໍ່ມີປຸ່ມ Auto Install)
+    // 5. ກວດສອບ iOS
     const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent) && !window.MSStream;
     if (isIos && !isRunningStandalone()) {
       document.getElementById('iosPrompt').style.display = 'block';
