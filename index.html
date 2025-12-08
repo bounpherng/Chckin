@@ -5,14 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ລະບົບເຊັກອິນ - ຕິດຕັ້ງ</title>
   
-  <!-- Manifest -->
+  <!-- Manifest: ໃຊ້ ./ ເພື່ອບອກວ່າຢູ່ໂຟນເດີດຽວກັນ -->
   <link rel="manifest" href="./manifest.json">
   
-  <!-- ໄອຄອນ Browser ແລະ iOS -->
+  <!-- ໄອຄອນ: ຕ້ອງກົງກັບຊື່ໄຟລ໌ແທ້ (GitHub Case Sensitive) -->
   <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
   <link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png">
   
-  <!-- ຕັ້ງຄ່າ PWA -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#2e9a57">
@@ -52,7 +51,7 @@
       cursor: pointer;
       font-weight: bold;
       width: 100%;
-      display: none; /* ເຊື່ອງໄວ້ກ່ອນ ຈົນກວ່າຈະພ້ອມ */
+      display: none; 
       box-shadow: 0 2px 4px rgba(46, 154, 87, 0.3);
       transition: transform 0.2s;
     }
@@ -81,7 +80,6 @@
 <body>
 
   <div class="container" id="mainContent">
-    <!-- ໃຊ້ onerror ເພື່ອສະແດງກ່ອງສີເທົາຖ້າໂຫລດຮູບບໍ່ໄດ້ -->
     <img src="./icon-192.png" alt="Logo" class="icon-preview" onerror="this.src=''; this.style.backgroundColor='#eee'">
     <h1>ລະບົບເຊັກອິນ</h1>
     <p id="statusText">ກະລຸນາຕິດຕັ້ງແອັບເພື່ອເຂົ້າສູ່ລະບົບ</p>
@@ -98,64 +96,55 @@
   </div>
 
   <script>
-    // 1. ກວດສອບວ່າເປີດຜ່ານ PWA (Standalone) ຫຼືບໍ່
+    // 1. ກວດສອບ PWA (Standalone)
     function isRunningStandalone() {
       return (window.matchMedia('(display-mode: standalone)').matches) ||
              (window.navigator.standalone) || 
              document.referrer.includes('android-app://');
     }
 
-    // 2. ຖ້າເປັນ PWA ແລ້ວ ໃຫ້ Redirect ທັນທີ
     if (isRunningStandalone()) {
       document.getElementById('mainContent').style.display = 'none'; 
-      // ໃຊ້ location.href ແທນ replace ເພື່ອຄວາມໝັ້ນໃຈໃນບາງ browser
       window.location.href = 'https://lssomain.laotel.com/Authentication';
     }
 
-    // 3. Service Worker Registration
+    // 2. Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
+        // ໃຊ້ ./ ເພື່ອບອກວ່າຢູ່ Folder ດຽວກັນ (ສຳຄັນຫຼາຍສຳລັບ GitHub Pages)
         navigator.serviceWorker.register('./service-worker.js')
           .then(reg => {
              console.log('SW Registered');
-             // ກວດສອບການອັບເດດທັນທີ
              reg.update();
           })
           .catch(err => console.error('SW Fail', err));
       });
     }
 
-    // 4. Logic Install Button
+    // 3. Logic Install Button
     let deferredPrompt;
     const installBtn = document.getElementById('installBtn');
     
     window.addEventListener('beforeinstallprompt', (e) => {
-      // ປ້ອງກັນບໍ່ໃຫ້ Browser ສະແດງ mini-infobar ອັດຕະໂນມັດ
       e.preventDefault();
-      // ເກັບ event ໄວ້ໃຊ້ພາຍຫຼັງ
       deferredPrompt = e;
-      // ສະແດງປຸ່ມຕິດຕັ້ງ
       installBtn.style.display = 'block';
     });
 
     installBtn.addEventListener('click', async () => {
       if (!deferredPrompt) return;
-      // ສະແດງ Prompt ຂອງ Browser
       deferredPrompt.prompt();
-      // ລໍຖ້າຜົນການຕັດສິນໃຈຂອງ User
       const { outcome } = await deferredPrompt.userChoice;
       console.log('User response:', outcome);
-      // ເຄຼຍຄ່າ event
       deferredPrompt = null;
     });
 
-    // 5. iOS Check
+    // 4. iOS Check
     const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent) && !window.MSStream;
     if (isIos && !isRunningStandalone()) {
       document.getElementById('iosPrompt').style.display = 'block';
     }
 
-    // 6. ເມື່ອຕິດຕັ້ງສຳເລັດ
     window.addEventListener('appinstalled', () => {
       installBtn.style.display = 'none';
       document.getElementById('statusText').innerText = 'ຕິດຕັ້ງສຳເລັດ! ກະລຸນາເປີດແອັບຈາກໜ້າຈໍຫຼັກ.';
