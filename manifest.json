@@ -2,7 +2,7 @@
   "name": "ລະບົບເຊັກອິນ - ປະກັນສັງຄົມ",
   "short_name": "ເຊັກອິນ",
   "description": "ລະບົບຕິດຕາມການເຊັກອິນເຂົ້າອອກຫ້ອງການ",
-  "start_url": ".",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#2e9a57",
   "theme_color": "#2e9a57",
@@ -15,9 +15,9 @@
       "purpose": "any maskable"
     },
     {
-      "src": "icon-512.png",
+      "src": "icon-512.jpg",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     }
   ]
