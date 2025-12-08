@@ -1,7 +1,7 @@
-// ອັບເດດ version ເປັນ v6-github ເພື່ອບັງຄັບໃຫ້ GitHub Pages ອັບເດດ
-const CACHE_NAME = 'checkin-pwa-v6-github';
+// ປ່ຽນຊື່ Cache ເປັນ v7 (Update ໃໝ່ລ່າສຸດ)
+const CACHE_NAME = 'checkin-pwa-v7-final';
 
-// ໃຊ້ ./ ນຳໜ້າສະເໝີສຳລັບ GitHub Pages
+// ຕ້ອງກົງກັບຊື່ໄຟລ໌ຈິງ 100% (ຕົວພິມນ້ອຍທັງໝົດ)
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -14,7 +14,7 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('✅ Caching assets for GitHub...');
+      console.log('✅ Caching assets v7...');
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
