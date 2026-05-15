@@ -503,6 +503,73 @@
       50%      { opacity: 1; }
     }
 
+    /* ===== INSTALL GATE ===== */
+    .gate-icon {
+      width: 72px; height: 72px;
+      margin: 4px auto 14px;
+      animation: gateFloat 3s ease-in-out infinite;
+    }
+    @keyframes gateFloat {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-6px); }
+    }
+    .gate-icon svg { width: 100%; height: 100%; }
+
+    .gate-title {
+      font-size: clamp(15px,4.2vw,17px);
+      font-weight: 800;
+      color: var(--cream);
+      margin-bottom: 8px;
+      text-shadow: 0 0 20px rgba(77,201,122,0.25);
+    }
+    .gate-sub {
+      font-size: clamp(11.5px,3vw,13px);
+      color: rgba(237,250,243,0.45);
+      line-height: 1.6;
+      margin-bottom: 20px;
+      padding: 0 4px;
+    }
+    .gate-btn { margin-bottom: 18px !important; }
+
+    /* iOS steps */
+    .ios-steps {
+      background: rgba(45,166,83,0.06);
+      border: 1px solid rgba(45,166,83,0.18);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+    .ios-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 12.5px;
+      color: rgba(237,250,243,0.65);
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+    .ios-step:last-child { margin-bottom: 0; }
+    .ios-step strong { color: var(--g-light); }
+    .step-num {
+      flex-shrink: 0;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: rgba(45,166,83,0.2);
+      border: 1px solid rgba(77,201,122,0.35);
+      color: var(--g-light);
+      font-size: 11px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ios-share-icon {
+      display: inline-block;
+      font-size: 15px;
+      color: var(--g-light);
+      transform: rotate(180deg);
+      margin: 0 1px;
+    }
+
     /* ===== ANIMATIONS ===== */
     @keyframes fadeUp {
       from { opacity:0; transform: translateY(32px); }
@@ -560,37 +627,72 @@
     <div class="card-body">
       <p class="org-label">Social Security Office</p>
       <h1 class="card-lao-title">ຫ້ອງການປະກັນສັງຄົມ</h1>
-
       <div class="divider"><div class="divider-gem"></div></div>
-
       <p class="card-sub">ລະບົບຕິດຕາມການເຂົ້າ-ອອກ ຫ້ອງການ</p>
 
-      <!-- COUNTDOWN RING -->
-      <div class="countdown-wrap">
-        <div class="ring-glow"></div>
-        <svg class="ring-svg" viewBox="0 0 120 120">
-          <circle cx="60" cy="60" r="56" class="ring-deco"/>
-          <circle cx="60" cy="60" r="56" class="ring-dots" id="ringDots"/>
-          <circle cx="60" cy="60" r="46" class="ring-track"/>
-          <circle cx="60" cy="60" r="46" class="ring-progress" id="ringProgress"/>
-          <circle cx="60" cy="60" r="36" class="ring-inner"/>
-        </svg>
-        <div class="countdown-center">
-          <span class="countdown-num" id="countNum">5</span>
-          <span class="countdown-label">ວິນາທີ</span>
+      <!-- ══ STATE A: ຍັງບໍ່ໄດ້ຕິດຕັ້ງ ══ -->
+      <div id="install-gate" style="display:none">
+        <div class="gate-icon">
+          <svg viewBox="0 0 64 64" fill="none">
+            <rect x="10" y="2" width="44" height="60" rx="7"
+              fill="rgba(45,166,83,0.08)" stroke="rgba(77,201,122,0.4)" stroke-width="2"/>
+            <circle cx="32" cy="54" r="3" fill="rgba(77,201,122,0.5)"/>
+            <path d="M22 28 L32 38 L42 28" stroke="rgba(77,201,122,0.9)"
+              stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="32" y1="16" x2="32" y2="38"
+              stroke="rgba(77,201,122,0.9)" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <p class="gate-title">ຕ້ອງຕິດຕັ້ງກ່ອນໃຊ້ງານ</p>
+        <p class="gate-sub">ກະລຸນາຕິດຕັ້ງແອັບໃສ່ໜ້າຈໍໂທລະສັບກ່ອນ ຈຶ່ງສາມາດໃຊ້ລະບົບໄດ້</p>
+
+        <!-- Android native install button -->
+        <button class="btn-green gate-btn" id="installApp" style="display:none">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v13M8 11l4 4 4-4"/>
+            <path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/>
+          </svg>
+          ຕິດຕັ້ງແອັບໃສ່ໂທລະສັບ
+        </button>
+
+        <!-- iOS manual guide -->
+        <div id="ios-guide" style="display:none">
+          <div class="ios-steps">
+            <div class="ios-step">
+              <span class="step-num">1</span>
+              <span>ກົດໄອຄອນ <strong>ແຊຣ໌</strong> <span class="ios-share-icon">⎋</span> ຢູ່ລຸ່ມໜ້າຈໍ Safari</span>
+            </div>
+            <div class="ios-step">
+              <span class="step-num">2</span>
+              <span>ເລື່ອນລົງ ແລ້ວເລືອກ <strong>"Add to Home Screen"</strong></span>
+            </div>
+            <div class="ios-step">
+              <span class="step-num">3</span>
+              <span>ກົດ <strong>"Add"</strong> ແລ້ວເປີດໄອຄອນຈາກໜ້າຈໍ</span>
+            </div>
+          </div>
         </div>
       </div>
-      <p class="redirect-hint">ກຳລັງໂອນໄປສູ່ລະບົບ...</p>
 
-      <button class="btn-outline" id="installApp" style="display:none">
-        <svg viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2"
-             stroke-linecap="round" stroke-linejoin="round">
-          <rect x="5" y="2" width="14" height="20" rx="2"/>
-          <line x1="12" y1="18" x2="12" y2="18"/>
-        </svg>
-        ຕິດຕັ້ງແອັບໃສ່ໂທລະສັບ
-      </button>
+      <!-- ══ STATE B: ຕິດຕັ້ງແລ້ວ — countdown ══ -->
+      <div id="countdown-section" style="display:none">
+        <div class="countdown-wrap">
+          <div class="ring-glow"></div>
+          <svg class="ring-svg" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="56" class="ring-deco"/>
+            <circle cx="60" cy="60" r="56" class="ring-dots"/>
+            <circle cx="60" cy="60" r="46" class="ring-track"/>
+            <circle cx="60" cy="60" r="46" class="ring-progress" id="ringProgress"/>
+            <circle cx="60" cy="60" r="36" class="ring-inner"/>
+          </svg>
+          <div class="countdown-center">
+            <span class="countdown-num" id="countNum">5</span>
+            <span class="countdown-label">ວິນາທີ</span>
+          </div>
+        </div>
+        <p class="redirect-hint">ກຳລັງໂອນໄປສູ່ລະບົບ...</p>
+      </div>
 
     </div>
   </div>
@@ -669,55 +771,100 @@
   // ===================================================
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  const targetUrl = 'https://lssomain.laotel.com/Authentication';
-  const TOTAL = 5;
-  let timeLeft = TOTAL;
+  const targetUrl    = 'https://lssomain.laotel.com/Authentication';
+  const TOTAL        = 5;
+  const CIRCUMFERENCE = 2 * Math.PI * 46;
+  let timeLeft       = TOTAL;
+  let countdownTimer = null;
 
-  const ringProgress = document.getElementById('ringProgress');
-  const countNum    = document.getElementById('countNum');
-  const CIRCUMFERENCE = 2 * Math.PI * 46; // r=46 => ~289.03
+  const ringProgress      = document.getElementById('ringProgress');
+  const countNum          = document.getElementById('countNum');
+  const installGate       = document.getElementById('install-gate');
+  const countdownSection  = document.getElementById('countdown-section');
+  const installBtn        = document.getElementById('installApp');
+  const iosGuide          = document.getElementById('ios-guide');
 
+  // ── ກວດສອບ: ເປີດໃນ standalone mode (ຕິດຕັ້ງແລ້ວ) ──
+  const isStandalone =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true;
+
+  // ── ກວດສອບ: iOS device ──
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+  // ──────────────────────────────────────────────────
   function setRing(remaining) {
-    const fraction = remaining / TOTAL;
-    const offset   = CIRCUMFERENCE * (1 - fraction);
+    const offset = CIRCUMFERENCE * (1 - remaining / TOTAL);
     ringProgress.style.strokeDashoffset = offset;
     countNum.textContent = remaining;
-    // colour shift gold on last 2 secs
     if (remaining <= 2) {
-      ringProgress.style.stroke = '#e8d399';
-      ringProgress.style.filter = 'drop-shadow(0 0 10px rgba(232,211,153,0.9))';
-      countNum.style.textShadow = '0 0 20px rgba(232,211,153,0.9), 0 0 40px rgba(204,167,82,0.5)';
+      ringProgress.style.stroke  = '#e8d399';
+      ringProgress.style.filter  = 'drop-shadow(0 0 10px rgba(232,211,153,0.9))';
+      countNum.style.textShadow  = '0 0 20px rgba(232,211,153,0.9), 0 0 40px rgba(204,167,82,0.5)';
     }
   }
 
-  // initialise ring at full
-  setRing(TOTAL);
-
   function openLink() { window.location.href = targetUrl; }
 
-  const timer = setInterval(() => {
-    timeLeft--;
-    setRing(timeLeft);
-    if (timeLeft <= 0) {
-      clearInterval(timer);
-      setTimeout(openLink, 400);
-    }
-  }, 1000);
+  function startCountdown() {
+    countdownSection.style.display = 'block';
+    installGate.style.display      = 'none';
+    setRing(TOTAL);
+    countdownTimer = setInterval(() => {
+      timeLeft--;
+      setRing(timeLeft);
+      if (timeLeft <= 0) {
+        clearInterval(countdownTimer);
+        setTimeout(openLink, 400);
+      }
+    }, 1000);
+  }
 
+  function showInstallGate() {
+    installGate.style.display      = 'block';
+    countdownSection.style.display = 'none';
+    if (isIOS) {
+      // iOS ບໍ່ຮອງຮັບ beforeinstallprompt — ສະແດງ manual guide
+      iosGuide.style.display = 'block';
+    }
+    // Android native button ຈະສະແດງໂດຍ beforeinstallprompt event ດ້ານລຸ່ມ
+  }
+
+  // ── ຕັດສິນໃຈຕົ້ນ ──
+  if (isStandalone) {
+    // ຜູ້ໃຊ້ເປີດຈາກໜ້າຈໍ (PWA) → ເລີ່ມນັບຖ້ອຍຫຼັງທັນທີ
+    startCountdown();
+  } else {
+    // ຍັງເປີດໃນ browser ປົກກະຕິ → ໃຫ້ຕິດຕັ້ງກ່ອນ
+    showInstallGate();
+  }
+
+  // ── Android: ຮັບ native install prompt ──
   let deferredPrompt;
-  const installBtn = document.getElementById('installApp');
   window.addEventListener('beforeinstallprompt', e => {
     e.preventDefault();
     deferredPrompt = e;
-    installBtn.style.display = 'flex';
-  });
-  installBtn.addEventListener('click', async () => {
-    installBtn.style.display = 'none';
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      await deferredPrompt.userChoice;
-      deferredPrompt = null;
+    if (!isStandalone) {
+      installBtn.style.display = 'flex'; // ສະແດງປຸ່ມຕິດຕັ້ງ
     }
+  });
+
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    installBtn.style.display = 'none';
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    if (outcome === 'accepted') {
+      // ຜູ້ໃຊ້ຕົກລົງຕິດຕັ້ງ — ລໍຖ້າ appinstalled event
+      console.log('[App] User accepted install');
+    }
+  });
+
+  // ── ເມື່ອ install ສຳເລັດ → ເລີ່ມ countdown ທັນທີ ──
+  window.addEventListener('appinstalled', () => {
+    console.log('[App] App installed!');
+    startCountdown();
   });
 
   // ===================================================
